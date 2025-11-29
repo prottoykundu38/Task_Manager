@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/ui/screens/sign_up_screen.dart';
+import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/screens/splash_screen.dart';
 
 class TaskManagerApp extends StatelessWidget {
@@ -15,7 +15,11 @@ class TaskManagerApp extends StatelessWidget {
         // primarySwatch: Colors.green,
         textTheme: TextTheme(
           titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+          // titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          // titleSmall: TextStyle(
+          //     fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey),
         ),
+
         //inoutdecoration theme prebuild style theke nijer kaj
         inputDecorationTheme: InputDecorationTheme(
           fillColor: Colors.white,
@@ -44,7 +48,11 @@ class TaskManagerApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignUpScreen(),
+      initialRoute: '/',
+      routes: {
+        SplashScreen.name: (context) => SplashScreen(),
+        SignInScreen.name: (context) => SignInScreen(),
+      },
     );
   }
 }
