@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:task_manager/ui/utils/assets_path.dart';
 
 class ScreenBackground extends StatelessWidget {
-  const ScreenBackground({
+  const ScreenBackground( {
     super.key,
     required this.child,
   });
@@ -23,6 +23,7 @@ class ScreenBackground extends StatelessWidget {
           SafeArea(child: child),
         ],
       ),
+      
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/ui/screens/cancelled_task_list_screen.dart';
 import 'package:task_manager/ui/screens/completed_task_list_screen.dart';
-import 'package:task_manager/ui/screens/in_Progress_tast_list_screen.dart';
+import 'package:task_manager/ui/screens/in_progress_tast_list_screen.dart';
 import 'package:task_manager/ui/screens/new_task_list_screen.dart';
 import 'package:task_manager/ui/widgets/tm_app_bar.dart';
 

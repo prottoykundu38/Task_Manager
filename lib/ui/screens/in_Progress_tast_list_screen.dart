@@ -16,10 +16,10 @@ class _InProgressTastListScreenState extends State<InProgressTastListScreen> {
         itemCount: 10,
         itemBuilder: (context, index) {
           return TaskCard(
-            Button: 'In Progress',
+            Button: 'In Progress', color: Colors.pink,
           );
         },
       ),
-    );;
+    );
   }
 }
