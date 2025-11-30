@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
+import 'package:task_manager/ui/widgets/tm_app_bar.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -19,6 +20,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: TMAppBar(),
       body: ScreenBackground(
           child: Padding(
         padding: const EdgeInsets.all(80),

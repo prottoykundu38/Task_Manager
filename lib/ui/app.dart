@@ -7,13 +7,17 @@ import 'package:task_manager/ui/screens/pin_verification_screen.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/screens/sign_up_screen.dart';
 import 'package:task_manager/ui/screens/splash_screen.dart';
+import 'package:task_manager/ui/screens/update_profile_screen.dart';
 
 class TaskManagerApp extends StatelessWidget {
   const TaskManagerApp({super.key});
 
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       //theme data diye app er global style define kora hoy
       theme: ThemeData(
         // primaryColor: Colors.green,
@@ -65,6 +69,7 @@ class TaskManagerApp extends StatelessWidget {
         ChangePasswordScreen.name: (context) => ChangePasswordScreen(),
         MainNavHolderScreen.name: (context) => MainNavHolderScreen(),
         AddNewTaskScreen.name: (context) => AddNewTaskScreen(),
+        UpdateProfileScreen.name: (context) => UpdateProfileScreen(),
       },
     );
   }
