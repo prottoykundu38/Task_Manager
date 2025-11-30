@@ -5,11 +5,19 @@ import 'package:task_manager/ui/widgets/screen_background.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
+  static const String name = 'sign-up';
+
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  TextEditingController _emailTEController = TextEditingController();
+  TextEditingController _firstNameTEController = TextEditingController();
+  TextEditingController _lastNameTEController = TextEditingController();
+  TextEditingController _mobileTEController = TextEditingController();
+  TextEditingController _passwordTEController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,27 +35,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 24),
               TextFormField(
+                controller: _emailTEController,
                 decoration: const InputDecoration(hintText: 'Email'),
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: _firstNameTEController,
                 decoration: const InputDecoration(hintText: 'First Name'),
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: _lastNameTEController,
                 decoration: const InputDecoration(hintText: 'Last Name'),
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: _mobileTEController,
                 decoration: const InputDecoration(hintText: 'Mobile'),
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: _passwordTEController,
                 decoration: const InputDecoration(hintText: 'Password'),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: _onTapSignUpButton,
                 child: const Icon(Icons.arrow_circle_right_outlined),
               ),
               SizedBox(
@@ -57,8 +70,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: RichText(
                     text: TextSpan(
                   text: "Have account? ",
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
                   children: [
                     TextSpan(
                       text: "Sign In",
@@ -67,9 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: Theme.of(context).primaryColor),
                       //.. is cascade operator
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pop(context);
-                        },
+                        ..onTap = _onTapSignInButton,
                     ),
                   ],
                 )),
@@ -79,5 +90,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+
+  void _onTapSignUpButton() {}
+  void _onTapSignInButton() {
+    Navigator.pop(context);
+  }
+
+  void dispose() {
+    _emailTEController.dispose();
+    _firstNameTEController.dispose();
+    _lastNameTEController.dispose();
+    _mobileTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
   }
 }

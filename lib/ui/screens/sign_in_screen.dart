@@ -1,12 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/ui/screens/forgot_password_email_screen.dart';
+import 'package:task_manager/ui/screens/sign_up_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
   static const String name = 'sign-in';
-
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -112,7 +113,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ),
                                 //.. is cascade operator
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = _onTapSignUpButton),
+                                  ..onTap = _onTapSignUpButton,
+                                  ),
                           ],
                         )),
                       ],
@@ -131,14 +133,14 @@ class _SignInScreenState extends State<SignInScreen> {
     if (_formKey.currentState!.validate()) {
       //TODO Sign In Logic
     }
-    // Navigate to Sign Up Screen
   }
 
   void _onTapForgotPassowordButton() {
-    // Navigate to Sign Up Screen
+    Navigator.pushNamed(context, ForgotPasswordEmailScreen.name);
   }
+
   void _onTapSignUpButton() {
-    // Navigate to Sign Up Screen
+    Navigator.pushNamed(context, SignUpScreen.name);
   }
 
   void dispose() {

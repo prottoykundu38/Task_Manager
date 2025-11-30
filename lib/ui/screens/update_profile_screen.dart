@@ -4,11 +4,18 @@ import 'package:task_manager/ui/widgets/screen_background.dart';
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
 
+  static const String name = 'update-profile';
+
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+  TextEditingController _emailTEController = TextEditingController();
+  TextEditingController _firstNameTEController = TextEditingController();
+  TextEditingController _lastNameTEController = TextEditingController();
+  TextEditingController _mobileTEController = TextEditingController();
+  TextEditingController _passwordTEController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +34,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               height: 10,
             ),
             TextFormField(
+              controller: _emailTEController,
               decoration: const InputDecoration(
                 hintText: 'Email',
               ),
@@ -35,6 +43,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               height: 10,
             ),
             TextFormField(
+              controller: _firstNameTEController,
               decoration: const InputDecoration(
                 hintText: 'First Name',
               ),
@@ -43,6 +52,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               height: 20,
             ),
             TextFormField(
+              controller: _lastNameTEController,
               decoration: const InputDecoration(
                 hintText: 'Last Name',
               ),
@@ -51,6 +61,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               height: 20,
             ),
             TextFormField(
+              controller: _mobileTEController,
               decoration: const InputDecoration(
                 hintText: 'Mobile',
               ),
@@ -59,6 +70,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               height: 20,
             ),
             TextFormField(
+              controller: _passwordTEController,
               decoration: const InputDecoration(
                 hintText: 'Password',
               ),
@@ -67,7 +79,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: _onTapSubmitButton,
               child: Text(
                 'Update',
                 style: TextStyle(fontWeight: FontWeight.w100),
@@ -77,5 +89,16 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         ),
       )),
     );
+  }
+
+  void _onTapSubmitButton() {}
+
+  void dispose() {
+    _emailTEController.dispose();
+    _firstNameTEController.dispose();
+    _lastNameTEController.dispose();
+    _mobileTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
   }
 }
