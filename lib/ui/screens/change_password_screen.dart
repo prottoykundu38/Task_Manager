@@ -13,6 +13,8 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  bool _isObscure = true;
+  bool _isConfirmObscure = true;
   TextEditingController _passwordTEController = TextEditingController();
   TextEditingController _confirmPasswordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -44,20 +46,41 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 TextFormField(
                   controller: _passwordTEController,
-                  decoration: const InputDecoration(
+                  obscureText: _isObscure,
+                  decoration: InputDecoration(
                     hintText: 'Password',
+                    suffixIcon: IconButton(
+                        icon: Icon(_isObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        }),
                   ),
-                  validator: (value) => value == null || value.isEmpty || value.length < 6
-                      ? 'Please enter a valid password'
-                      : null,
+                  validator: (value) =>
+                      value == null || value.isEmpty || value.length < 6
+                          ? 'Please enter a valid password'
+                          : null,
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 TextFormField(
+                  obscureText: _isConfirmObscure,
                   controller: _confirmPasswordTEController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Confirm Password',
+                    suffixIcon: IconButton(
+                        icon: Icon(_isConfirmObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _isConfirmObscure = !_isConfirmObscure;
+                          });
+                        }),
                   ),
                   validator: (value) {
                     if (value != _passwordTEController.text) {

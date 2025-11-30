@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/ui/screens/forgot_password_email_screen.dart';
+import 'package:task_manager/ui/screens/main_nav_holder_screen.dart';
 import 'package:task_manager/ui/screens/sign_up_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
 
@@ -106,15 +107,15 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           children: [
                             TextSpan(
-                                text: 'Sign Up',
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                                //.. is cascade operator
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = _onTapSignUpButton,
-                                  ),
+                              text: 'Sign Up',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              //.. is cascade operator
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = _onTapSignUpButton,
+                            ),
                           ],
                         )),
                       ],
@@ -133,6 +134,8 @@ class _SignInScreenState extends State<SignInScreen> {
     if (_formKey.currentState!.validate()) {
       //TODO Sign In Logic
     }
+    Navigator.pushNamedAndRemoveUntil(
+        context, MainNavHolderScreen.name, (predicate) => false);
   }
 
   void _onTapForgotPassowordButton() {
