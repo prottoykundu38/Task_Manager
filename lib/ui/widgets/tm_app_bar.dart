@@ -59,17 +59,10 @@ class _TMAppBarState extends State<TMAppBar> {
   }
 
   void _onTapProfileBar() {
-    var navigator = TaskManagerApp.navigatorKey.currentState;
-
-    String? currentRoute;
-    navigator?.popUntil((route) {
-      currentRoute = route.settings.name;
-      return true;
-    });
-
-    if (currentRoute != UpdateProfileScreen.name) {
-      navigator?.pushNamed(UpdateProfileScreen.name);
+    if (ModalRoute.of(context)!.settings.name != UpdateProfileScreen.name) {
+      Navigator.pushNamed(context, UpdateProfileScreen.name);
     }
+    return;
   }
 
   void _onTapLogoutButton() {
