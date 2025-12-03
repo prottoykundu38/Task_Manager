@@ -128,7 +128,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  void _onTapConfirmButton() {}
+  void _onTapConfirmButton() {
+    Navigator.pushNamed(context, SignInScreen.name);
+  }
 
   void _onTapSignInButton() {
     Navigator.pushNamedAndRemoveUntil(
