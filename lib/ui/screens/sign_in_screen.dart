@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/data/models/network_caller.dart';
-import 'package:task_manager/data/services/urls.dart';
+import 'package:task_manager/data/models/user_model.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/urls.dart';
+import 'package:task_manager/ui/controllers/auth_controller.dart';
 import 'package:task_manager/ui/screens/forgot_password_email_screen.dart';
 import 'package:task_manager/ui/screens/main_nav_holder_screen.dart';
 import 'package:task_manager/ui/screens/sign_up_screen.dart';
@@ -12,7 +14,7 @@ import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
-  static const String name = 'sign-in';
+  static const String name = '/sign-in';
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -22,111 +24,91 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool SignInProgress = false;
+  bool _signInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ScreenBackground(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(28.0),
+            padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 80,
-                  ),
+                  const SizedBox(height: 80),
                   Text(
                     'Get Started With',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  SizedBox(
-                    height: 24,
-                  ),
+                  const SizedBox(height: 24),
                   TextFormField(
                     controller: _emailTEController,
                     textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                    ),
+                    decoration: InputDecoration(hintText: 'Email'),
                     validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}')
-                          .hasMatch(value)) {
-                        return 'Please enter a valid email address';
+                      if ((value?.length ?? 0) <= 6) {
+                        return 'Enter a valid password';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
                   TextFormField(
                     controller: _passwordTEController,
                     obscureText: true,
                     decoration: InputDecoration(hintText: 'Password'),
                     validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters long';
+                      if ((value?.length ?? 0) <= 6) {
+                        return 'Enter a valid password';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
+                  const SizedBox(height: 16),
                   Visibility(
-                    visible: SignInProgress == false,
+                    visible: _signInProgress == false,
                     replacement: CenteredCircularProgressIndicator(),
                     child: ElevatedButton(
                       onPressed: _onTapSignInButton,
-                      child: Icon(
-                        Icons.arrow_circle_right_outlined,
-                      ),
+                      child: Icon(Icons.arrow_circle_right_outlined),
                     ),
                   ),
-                  const SizedBox(
-                    height: 32,
-                  ),
+                  const SizedBox(height: 32),
                   Center(
                     child: Column(
                       children: [
                         TextButton(
-                          onPressed: _onTapForgotPassowordButton,
-                          child: const Text(
+                          onPressed: _onTapForgotPasswordButton,
+                          child: Text(
                             'Forgot Password?',
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),
                         RichText(
-                            text: TextSpan(
-                          text: "Don't have an account? ",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: 'Sign Up',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              //.. is cascade operator
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = _onTapSignUpButton,
+                          text: TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                              letterSpacing: 0.4,
                             ),
-                          ],
-                        )),
+                            children: [
+                              TextSpan(
+                                text: 'Sign Up',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = _onTapSignUpButton,
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -146,27 +128,35 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-    SignInProgress = true;
+    _signInProgress = true;
     setState(() {});
+
     Map<String, String> requestBody = {
       "email": _emailTEController.text.trim(),
       "password": _passwordTEController.text,
     };
 
-    NetworkResponse response =
-        await NetworkCaller.postRequest(url: Urls.loginUrl, body: requestBody);
+    NetworkResponse response = await NetworkCaller.postRequest(
+      url: Urls.loginUrl,
+      body: requestBody,
+    );
 
     if (response.isSuccess) {
+      UserModel userModel = UserModel.fromJson(response.body!['data']);
+      String token = response.body!['token'];
+
+      await AuthController.saveUserData(userModel, token);
+
       Navigator.pushNamedAndRemoveUntil(
           context, MainNavHolderScreen.name, (predicate) => false);
     } else {
-      SignInProgress = false;
+      _signInProgress = false;
       setState(() {});
       showSnackBarMessage(context, response.errorMessage!);
     }
   }
 
-  void _onTapForgotPassowordButton() {
+  void _onTapForgotPasswordButton() {
     Navigator.pushNamed(context, ForgotPasswordEmailScreen.name);
   }
 
@@ -174,6 +164,7 @@ class _SignInScreenState extends State<SignInScreen> {
     Navigator.pushNamed(context, SignUpScreen.name);
   }
 
+  @override
   void dispose() {
     _emailTEController.dispose();
     _passwordTEController.dispose();

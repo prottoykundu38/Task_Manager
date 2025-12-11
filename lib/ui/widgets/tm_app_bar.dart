@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/ui/app.dart';
+import 'package:task_manager/ui/controllers/auth_controller.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/screens/update_profile_screen.dart';
 
@@ -32,14 +32,14 @@ class _TMAppBarState extends State<TMAppBar> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Prottoy kundu',
+                    AuthController.userModel!.fullName,
                     style: TextStyle(
                         fontSize: 15,
                         color: Colors.white,
                         fontWeight: FontWeight.w500),
                   ),
                   Text(
-                    'turjakundu2016@gmail.com',
+                    AuthController.userModel!.email,
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.white,
@@ -65,7 +65,8 @@ class _TMAppBarState extends State<TMAppBar> {
     return;
   }
 
-  void _onTapLogoutButton() {
+  void _onTapLogoutButton() async {
+    await AuthController.clearData();
     Navigator.pushNamedAndRemoveUntil(
         context, SignInScreen.name, (predicate) => false);
   }
