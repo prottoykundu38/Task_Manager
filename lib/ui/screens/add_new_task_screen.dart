@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/urls.dart';
+import 'package:task_manager/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
+import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 import 'package:task_manager/ui/widgets/tm_app_bar.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
@@ -12,9 +16,10 @@ class AddNewTaskScreen extends StatefulWidget {
 }
 
 class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
-  TextEditingController _subjectTEController = TextEditingController();
+  TextEditingController _titleTEController = TextEditingController();
   TextEditingController _descriptionTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _addNewTaskInProgress = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +42,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                   validator: (value) => value == null || value.isEmpty
                       ? 'Subject can not be empty'
                       : null,
-                  controller: _subjectTEController,
+                  controller: _titleTEController,
                   decoration: const InputDecoration(hintText: 'subject'),
                 ),
                 const SizedBox(height: 10),
@@ -53,9 +58,13 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: _onTapSubmitButton,
-                  child: const Icon(Icons.arrow_circle_right_outlined),
+                Visibility(
+                  visible: _addNewTaskInProgress == false,
+                  replacement: CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: _onTapSubmitButton,
+                    child: const Icon(Icons.arrow_circle_right_outlined),
+                  ),
                 ),
               ],
             ),
@@ -65,10 +74,39 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     );
   }
 
-  void _onTapSubmitButton() {}
+  void _onTapSubmitButton() {
+    if (_formKey.currentState!.validate()) {
+      _addNewTask();
+    }
+  }
+
+  Future<void> _addNewTask() async {
+    _addNewTaskInProgress = false;
+    setState(() {});
+
+    Map<String, String> requestBody = {
+      'title': _titleTEController.text.trim(),
+      'description': _descriptionTEController.text.trim(),
+    };
+
+    NetworkResponse response = await NetworkCaller.postRequest(
+      url: Urls.createTaskUrl,
+      body: requestBody,
+    );
+
+    _addNewTaskInProgress = false;
+    setState(() {});
+    if (response.isSuccess) {
+      _titleTEController.clear();
+      _descriptionTEController.clear();
+      showSnackBarMessage(context, 'Added New Task');
+    } else {
+      showSnackBarMessage(context, response.errorMessage!);
+    }
+  }
 
   void dispose() {
-    _subjectTEController.dispose();
+    _titleTEController.dispose();
     _descriptionTEController.dispose();
     super.dispose();
   }

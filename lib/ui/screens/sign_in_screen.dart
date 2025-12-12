@@ -139,6 +139,7 @@ class _SignInScreenState extends State<SignInScreen> {
     NetworkResponse response = await NetworkCaller.postRequest(
       url: Urls.loginUrl,
       body: requestBody,
+      isFromLogIn: true,
     );
 
     if (response.isSuccess) {
