@@ -18,9 +18,9 @@ class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
       child: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
-          return TaskCard(
-            Button: 'Completed', color: Colors.green,
-          );
+          // return TaskCard(
+          //   // Button: 'Completed', color: Colors.green,
+          // );
         },
       ),
     );

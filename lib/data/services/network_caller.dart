@@ -27,9 +27,16 @@ class NetworkCaller {
     try {
       Uri uri = Uri.parse(url);
 
-      _logRequest(url, null, null);
-      Response response = await get(uri);
-      _logResponse(url, response);
+      final Map<String, String> headers = {
+        'token': AuthController.accessToken ?? '',
+      };
+
+      _logRequest(url, null, headers);
+      Response response = await get(uri, headers: headers);
+      _logResponse(
+        url,
+        response,
+      );
 
       if (response.statusCode == 200) {
         final decodedJson = jsonDecode(response.body);

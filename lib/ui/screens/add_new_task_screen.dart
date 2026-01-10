@@ -87,10 +87,11 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     Map<String, String> requestBody = {
       'title': _titleTEController.text.trim(),
       'description': _descriptionTEController.text.trim(),
+      "status": "New",
     };
 
     NetworkResponse response = await NetworkCaller.postRequest(
-      url: Urls.createTaskUrl,
+      url: Urls.createNewTaskUrl,
       body: requestBody,
     );
 

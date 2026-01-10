@@ -19,7 +19,7 @@ class _MainNavHolderScreenState extends State<MainNavHolderScreen> {
     NewTaskListScreen(),
     CompletedTaskListScreen(),
     CancelledTaskListScreen(),
-    InProgressTastListScreen()
+    ProgressTaskListScreen()
   ];
   int _selectedIndex = 0;
   @override
