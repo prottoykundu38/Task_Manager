@@ -1,9 +1,16 @@
 class TaskStatusCountModel {
-  late String id;
-  late int count;
+  final String id;
+  final int count;
 
-  TaskStatusCountModel.fromJson(Map<String, dynamic> jsonData) {
-    id = jsonData['_id'];
-    count = jsonData['sum'];
+  TaskStatusCountModel({
+    required this.id,
+    required this.count,
+  });
+
+  factory TaskStatusCountModel.fromJson(Map<String, dynamic> jsonData) {
+    return TaskStatusCountModel(
+      id: jsonData['_id'] ?? 'Unknown',
+      count: jsonData['sum'] ?? 0,
+    );
   }
 }
