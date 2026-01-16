@@ -17,56 +17,74 @@ class CompletedTaskListScreen extends StatefulWidget {
 }
 
 class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
-
-    bool _getCompletedTasksInProgress = false;
+  bool _getCompletedTasksInProgress = true;
   List<TaskModel> _completedTaskList = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getCompletedTaskList();
-    });
+    _getCompletedTaskList();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: _getCompletedTasksInProgress == false,
-      replacement: CenteredCircularProgressIndicator(),
-      child: Expanded(
-        child: ListView.builder(
-          itemCount: _completedTaskList.length,
-          itemBuilder: (context, index) {
-            return TaskCard(taskType: TaskType.completed, taskModel: _completedTaskList[index], onStatusUpdate: () {
-              _getCompletedTaskList();
-            },);
-             
-          },
+    if (_getCompletedTasksInProgress) {
+      return const CenteredCircularProgressIndicator();
+    }
+
+    if (_completedTaskList.isEmpty) {
+      return const Center(
+        child: Text(
+          'No completed tasks found',
+          style: TextStyle(fontSize: 16),
         ),
-      ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: _completedTaskList.length,
+      itemBuilder: (context, index) {
+        return TaskCard(
+          taskType: TaskType.completed,
+          taskModel: _completedTaskList[index],
+          onStatusUpdate: () {
+            _getCompletedTaskList();
+          },
+        );
+      },
     );
   }
 
-   Future<void> _getCompletedTaskList() async {
+  Future<void> _getCompletedTaskList() async {
     _getCompletedTasksInProgress = true;
     setState(() {});
 
-    NetworkResponse response = await NetworkCaller
-        .getRequest(url: Urls.getCompletedTasksUrl);
+    final NetworkResponse response =
+        await NetworkCaller.getRequest(
+          url: Urls.getCompletedTasksUrl,
+        );
 
     if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body!['data']) {
+      final List<TaskModel> list = [];
+
+      for (final Map<String, dynamic> jsonData
+          in response.body!['data']) {
         list.add(TaskModel.fromJson(jsonData));
       }
+
       _completedTaskList = list;
     } else {
-      showSnackBarMessage(context, response.errorMessage!);
+      if (mounted) {
+        showSnackBarMessage(
+          context,
+          response.errorMessage ?? 'Something went wrong',
+        );
+      }
     }
 
     _getCompletedTasksInProgress = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

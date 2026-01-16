@@ -10,61 +10,81 @@ class CancelledTaskListScreen extends StatefulWidget {
   const CancelledTaskListScreen({super.key});
 
   @override
-  State<CancelledTaskListScreen> createState() => _CancelledTaskListScreenState();
+  State<CancelledTaskListScreen> createState() =>
+      _CancelledTaskListScreenState();
 }
 
-class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
-  
-    bool _getCancelledTasksInProgress = false;
+class _CancelledTaskListScreenState
+    extends State<CancelledTaskListScreen> {
+
+  bool _getCancelledTasksInProgress = true;
   List<TaskModel> _cancelledTaskList = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getCancelledTaskList();
-    });
+    _getCancelledTaskList();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: _getCancelledTasksInProgress == false,
-      replacement: CenteredCircularProgressIndicator(),
-      child: Expanded(
-        child: ListView.builder(
-          itemCount: _cancelledTaskList.length,
-          itemBuilder: (context, index) {
-            return TaskCard(
-              taskType: TaskType.cancelled,
-              taskModel: _cancelledTaskList[index],
-              onStatusUpdate: () {
-                _getCancelledTaskList();
-              },
-            );
-          },
+    if (_getCancelledTasksInProgress) {
+      return const CenteredCircularProgressIndicator();
+    }
+
+    if (_cancelledTaskList.isEmpty) {
+      return const Center(
+        child: Text(
+          'No cancelled tasks found',
+          style: TextStyle(fontSize: 16),
         ),
-      ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: _cancelledTaskList.length,
+      itemBuilder: (context, index) {
+        return TaskCard(
+          taskType: TaskType.cancelled,
+          taskModel: _cancelledTaskList[index],
+          onStatusUpdate: () {
+            _getCancelledTaskList();
+          },
+        );
+      },
     );
   }
 
-   Future<void> _getCancelledTaskList() async {
+  Future<void> _getCancelledTaskList() async {
     _getCancelledTasksInProgress = true;
     setState(() {});
 
-    NetworkResponse response = await NetworkCaller
-        .getRequest(url: Urls.getCancelledTasksUrl);
+    final NetworkResponse response =
+        await NetworkCaller.getRequest(
+          url: Urls.getCancelledTasksUrl,
+        );
 
     if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body!['data']) {
+      final List<TaskModel> list = [];
+
+      for (final Map<String, dynamic> jsonData
+          in response.body!['data']) {
         list.add(TaskModel.fromJson(jsonData));
       }
+
       _cancelledTaskList = list;
     } else {
-      showSnackBarMessage(context, response.errorMessage!);
+      if (mounted) {
+        showSnackBarMessage(
+          context,
+          response.errorMessage ?? 'Something went wrong',
+        );
+      }
     }
 
     _getCancelledTasksInProgress = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
