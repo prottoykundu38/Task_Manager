@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:task_manager/ui/controllers/auth_controller.dart';
 import 'package:task_manager/ui/screens/main_nav_holder_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
 import 'package:task_manager/ui/widgets/tm_app_bar.dart';
@@ -22,6 +23,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
   XFile? _selectedImage;
+
+  void initState() {
+    super.initState();
+    _emailTEController.text = AuthController.userModel?.email ?? '';
+    _firstNameTEController.text = AuthController.userModel?.firstName ?? '';
+    _lastNameTEController.text = AuthController.userModel?.lastName ?? '';
+    _mobileTEController.text = AuthController.userModel?.mobile ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,74 +41,79 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         padding: const EdgeInsets.all(80),
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Update Profile',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              _buildPhotoPicker(),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: _emailTEController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Update Profile',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: _firstNameTEController,
-                decoration: const InputDecoration(
-                  hintText: 'First Name',
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                controller: _lastNameTEController,
-                decoration: const InputDecoration(
-                  hintText: 'Last Name',
+                _buildPhotoPicker(),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                controller: _mobileTEController,
-                decoration: const InputDecoration(
-                  hintText: 'Mobile',
+                TextFormField(
+                  controller: _emailTEController,
+                  textInputAction: TextInputAction.next,
+                  enabled: false,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                controller: _passwordTEController,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: _onTapSubmitButton,
-                child: Text(
-                  'Update',
-                  style: TextStyle(fontWeight: FontWeight.w100),
+                TextFormField(
+                  controller: _firstNameTEController,
+                  textInputAction: TextInputAction.next,
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  controller: _lastNameTEController,
+                  textInputAction: TextInputAction.next,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  controller: _mobileTEController,
+                  textInputAction: TextInputAction.next,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  controller: _passwordTEController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Password',
+                  ),
+                  validator: (String? value) {
+                    int length = value?.length ?? 0;
+                    if (length > 0 && length <= 6) {
+                      return 'Enter a password of at least 6 letters';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _formKey.currentState!.validate();
+                  },
+                  child: Text(
+                    'Update',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       )),
@@ -145,9 +160,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     );
   }
 
-  void _onTapSubmitButton() {
-    Navigator.pushNamed(context, MainNavHolderScreen.name);
-  }
+  // void _onTapSubmitButton() {
+  //   Navigator.pushNamed(context, MainNavHolderScreen.name);
+  // }
 
   Future<void> _onTapPhotoPicker() async {
     final XFile? pickedImage =
