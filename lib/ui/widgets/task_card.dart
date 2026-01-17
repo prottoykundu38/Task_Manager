@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/data/models/task_model.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/urls.dart';
 import 'package:task_manager/ui/widgets/centered_circular_progress_indicator.dart';
+import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 
 enum TaskType { tNew, progress, completed, cancelled }
 
@@ -64,7 +67,7 @@ class _TaskCardState extends State<TaskCard> {
                   replacement: CenteredCircularProgressIndicator(),
                   child: IconButton(
                     onPressed: () {
-                      // _showEditTaskStatusDialog();
+                      _showEditTaskStatusDialog();
                     },
                     icon: Icon(Icons.edit),
                   ),
@@ -103,7 +106,63 @@ class _TaskCardState extends State<TaskCard> {
     }
   }
 
-  void _onTapEditButton() {}
+  void _showEditTaskStatusDialog() {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Change Task Status'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: Text('New'),
+                  trailing: _getTaskStatusTrailing(TaskType.tNew),
+                  onTap: () {},
+                ),
+                ListTile(
+                  title: Text('Completed'),
+                  trailing: _getTaskStatusTrailing(TaskType.completed),
+                ),
+                ListTile(
+                  title: Text('Cancelled'),
+                  trailing: _getTaskStatusTrailing(TaskType.cancelled),
+                ),
+                ListTile(
+                  title: Text('In Progress'),
+                  trailing: _getTaskStatusTrailing(TaskType.progress),
+                ),
+              ],
+            ),
+          );
+        });
+  }
 
-  void _onTapDeleteButton() {}
+  Widget? _getTaskStatusTrailing(TaskType type) {
+    return widget.taskType == type ? Icon(Icons.check) : null;
+  }
+
+  Future<void> _updateTaskStatus(String status) async {
+    Navigator.pop(context);
+    _updateTaskStatusInProgress = true;
+    if (mounted) {
+      setState(() {});
+    }
+    NetworkResponse response = await NetworkCaller.getRequest(
+      url: Urls.updateTaskStatusUrl(widget.taskModel.id, status),
+    );
+
+    _updateTaskStatusInProgress = false;
+    if (mounted) {
+      setState(() {});
+    }
+
+    if (response.isSuccess) {
+      widget.onStatusUpdate();
+    } else {
+      if (mounted) {
+        showSnackBarMessage(context, response.errorMessage!);
+      }
+    }
+  }
 }
