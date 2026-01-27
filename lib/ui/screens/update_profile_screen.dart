@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/urls.dart';
 import 'package:task_manager/ui/controllers/auth_controller.dart';
-import 'package:task_manager/ui/screens/main_nav_holder_screen.dart';
+import 'package:task_manager/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
+import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 import 'package:task_manager/ui/widgets/tm_app_bar.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
@@ -20,10 +25,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   TextEditingController _lastNameTEController = TextEditingController();
   TextEditingController _mobileTEController = TextEditingController();
   TextEditingController _passwordTEController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
-  XFile? _selectedImage;
 
+  XFile? _selectedImage;
+  bool _updatedProfileInProgress = false;
+
+  @override
   void initState() {
     super.initState();
     _emailTEController.text = AuthController.userModel?.email ?? '';
@@ -37,132 +46,129 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     return Scaffold(
       appBar: TMAppBar(),
       body: ScreenBackground(
-          child: Padding(
-        padding: const EdgeInsets.all(80),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Update Profile',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                _buildPhotoPicker(),
-                SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  controller: _emailTEController,
-                  textInputAction: TextInputAction.next,
-                  enabled: false,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  controller: _firstNameTEController,
-                  textInputAction: TextInputAction.next,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  controller: _lastNameTEController,
-                  textInputAction: TextInputAction.next,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  controller: _mobileTEController,
-                  textInputAction: TextInputAction.next,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  controller: _passwordTEController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    hintText: 'Password',
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Update Profile',
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  validator: (String? value) {
-                    int length = value?.length ?? 0;
-                    if (length > 0 && length <= 6) {
-                      return 'Enter a password of at least 6 letters';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _formKey.currentState!.validate();
-                  },
-                  child: Text(
-                    'Update',
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                  const SizedBox(height: 10),
+                  _buildPhotoPicker(),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _emailTEController,
+                    enabled: false,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _firstNameTEController,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _lastNameTEController,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _mobileTEController,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _passwordTEController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      hintText: 'Password',
+                    ),
+                    validator: (String? value) {
+                      int length = value?.length ?? 0;
+                      if (length > 0 && length <= 6) {
+                        return 'Enter a password of at least 6 letters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Visibility(
+                    visible: !_updatedProfileInProgress,
+                    replacement: const CenteredCircularProgressIndicator(),
+                    child: ElevatedButton(
+                      onPressed: _onTapSubmitButton,
+                      child: const Text(
+                        'Update',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      )),
-    );
-  }
-
-  Widget _buildPhotoPicker() {
-    return Container(
-      height: 50,
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8), color: Colors.white),
-      child: Row(
-        children: [
-          Container(
-            child: Center(
-                child: Text(
-              'Photos',
-              style:
-                  TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
-            )),
-            height: 50,
-            width: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                bottomLeft: Radius.circular(8),
-              ),
-              color: Colors.grey,
-            ),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Text(
-            _selectedImage == null ? 'Selected Image' : _selectedImage!.name,
-            maxLines: 1,
-            style: TextStyle(
-              overflow: TextOverflow.clip,
-            ),
-          ),
-        ],
       ),
     );
   }
 
-  // void _onTapSubmitButton() {
-  //   Navigator.pushNamed(context, MainNavHolderScreen.name);
-  // }
+  Widget _buildPhotoPicker() {
+    return GestureDetector(
+      onTap: _onTapPhotoPicker,
+      child: Container(
+        height: 50,
+        width: double.maxFinite,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 50,
+              width: 100,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                ),
+                color: Colors.grey,
+              ),
+              child: const Center(
+                child: Text(
+                  'Photos',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                _selectedImage == null
+                    ? 'Select Image'
+                    : _selectedImage!.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onTapSubmitButton() {
+    if (_formKey.currentState!.validate()) {
+      _updateProfile();
+    }
+  }
 
   Future<void> _onTapPhotoPicker() async {
     final XFile? pickedImage =
@@ -174,6 +180,47 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     }
   }
 
+  Future<void> _updateProfile() async {
+    _updatedProfileInProgress = true;
+    if (mounted) setState(() {});
+
+    Map<String, String> requestBody = {
+      'email': _emailTEController.text,
+      'firstName': _firstNameTEController.text.trim(),
+      'lastName': _lastNameTEController.text.trim(),
+      'mobile': _mobileTEController.text.trim(),
+    };
+
+    if (_passwordTEController.text.isNotEmpty) {
+      requestBody['password'] = _passwordTEController.text;
+    }
+
+    if (_selectedImage != null) {
+      Uint8List imageBytes = await _selectedImage!.readAsBytes();
+      requestBody['photo'] = base64Encode(imageBytes);
+    }
+
+    NetworkResponse response = await NetworkCaller.postRequest(
+      url: Urls.updateProfileUrl,
+      body: requestBody,
+    );
+
+    if (response.isSuccess) {
+      _passwordTEController.clear();
+      if (mounted) {
+        showSnackBarMessage(context, 'Profile updated successfully');
+      }
+    } else {
+      if (mounted) {
+        showSnackBarMessage(context, response.errorMessage!);
+      }
+    }
+
+    _updatedProfileInProgress = false;
+    if (mounted) setState(() {});
+  }
+
+  @override
   void dispose() {
     _emailTEController.dispose();
     _firstNameTEController.dispose();
