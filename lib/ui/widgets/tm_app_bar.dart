@@ -1,16 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:task_manager/ui/controllers/auth_controller.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/screens/update_profile_screen.dart';
 
 class TMAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const TMAppBar({
-    super.key,
-  });
+  const TMAppBar({super.key});
 
   @override
-  // TODO: implement preferredSize
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   State<TMAppBar> createState() => _TMAppBarState();
@@ -19,55 +17,75 @@ class TMAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _TMAppBarState extends State<TMAppBar> {
   @override
   Widget build(BuildContext context) {
+    final user = AuthController.userModel;
+
     return AppBar(
       backgroundColor: Colors.green,
-      title: GestureDetector(
-        onTap: _onTapProfileBar,
-        child: Row(
-          children: [
-            CircleAvatar(),
-            SizedBox(width: 16),
-            Expanded(
+      title: Row(
+        children: [
+          /// ✅ Profile Image
+          CircleAvatar(
+            backgroundColor: Colors.white,
+            backgroundImage: user?.photo != null
+                ? MemoryImage(base64Decode(user!.photo!))
+                : null,
+            child: user?.photo == null
+                ? const Icon(Icons.person, color: Colors.green)
+                : null,
+          ),
+          const SizedBox(width: 16),
+
+          /// ✅ Only profile area clickable
+          Expanded(
+            child: GestureDetector(
+              onTap: _onTapProfileBar,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AuthController.userModel!.fullName,
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
+                    user?.fullName ?? '',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   Text(
-                    AuthController.userModel!.email,
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
+                    user?.email ?? '',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ),
-            IconButton(
-              onPressed: _onTapLogoutButton,
-              icon: Icon(Icons.logout),
-            ),
-          ],
-        ),
+          ),
+
+          /// ✅ Logout works correctly
+          IconButton(
+            onPressed: _onTapLogoutButton,
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
     );
   }
 
   void _onTapProfileBar() {
-    if (ModalRoute.of(context)!.settings.name != UpdateProfileScreen.name) {
+    if (ModalRoute.of(context)?.settings.name !=
+        UpdateProfileScreen.name) {
       Navigator.pushNamed(context, UpdateProfileScreen.name);
     }
-    return;
   }
 
   void _onTapLogoutButton() async {
     await AuthController.clearData();
     Navigator.pushNamedAndRemoveUntil(
-        context, SignInScreen.name, (predicate) => false);
+      context,
+      SignInScreen.name,
+      (predicate) => false,
+    );
   }
 }

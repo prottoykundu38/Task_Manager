@@ -68,17 +68,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _firstNameTEController,
-                    textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _lastNameTEController,
-                    textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _mobileTEController,
-                    textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -170,9 +167,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     }
   }
 
+  /// ✅ FIX HERE (image compressed)
   Future<void> _onTapPhotoPicker() async {
-    final XFile? pickedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 60,     
+      maxWidth: 800,        
+      maxHeight: 800,      
+    );
 
     if (pickedImage != null) {
       _selectedImage = pickedImage;
