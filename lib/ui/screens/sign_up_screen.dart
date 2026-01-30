@@ -27,20 +27,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: ScreenBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
           child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 80),
                 Text(
                   'Join With Us',
-                  // textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 24),
@@ -107,27 +111,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: const Icon(Icons.arrow_circle_right_outlined),
                   ),
                 ),
-                SizedBox(
-                  height: 38,
-                ),
+                const SizedBox(height: 38),
                 Center(
                   child: RichText(
-                      text: TextSpan(
-                    text: "Have account? ",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black),
-                    children: [
-                      TextSpan(
-                        text: "Sign In",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor),
-                        //.. is cascade operator
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = _onTapSignInButton,
+                    text: TextSpan(
+                      text: "Have account? ",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                    ],
-                  )),
+                      children: [
+                        TextSpan(
+                          text: "Sign In",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = _onTapSignInButton,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -138,7 +143,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _onTapSignUpButton() {
-    // Navigator.pushNamed(context, SignInScreen.name);
     if (_formKey.currentState!.validate()) {
       _signUp();
     }
@@ -155,15 +159,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "password": _passwordTEController.text,
     };
     NetworkResponse response = await NetworkCaller.postRequest(
-        url: Urls.registrationUrl, body: requestBody);
+      url: Urls.registrationUrl,
+      body: requestBody,
+    );
 
     _signUpInProgress = false;
     setState(() {});
 
     if (response.isSuccess) {
       _clearTextFields();
-      showSnackBarMessage(
-          context, 'Registration has been success Please log in');
+      showSnackBarMessage(context, 'Registration has been success Please log in');
     } else {
       showSnackBarMessage(context, response.errorMessage!);
     }
@@ -181,6 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Navigator.pop(context);
   }
 
+  @override
   void dispose() {
     _emailTEController.dispose();
     _firstNameTEController.dispose();

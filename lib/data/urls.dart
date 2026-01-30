@@ -17,4 +17,9 @@ class Urls {
       '$_baseUrl/updateTaskStatus/$taskId/$status';
 
   static const String updateProfileUrl = '$_baseUrl/ProfileUpdate';
+  static String recoverVerifyEmail(String email) =>
+      '$_baseUrl/RecoverVerifyEmail/$email';
+  static String recoveryVerifyEmail(String email, int otp) =>
+      '$_baseUrl/RecoverVerifyOtp/$email/$otp';
+  static String recoveryResetPasseord = '$_baseUrl/RecoverResetPassword';
 }
