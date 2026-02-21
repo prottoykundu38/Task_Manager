@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
 import 'package:task_manager/data/urls.dart';
-import 'package:task_manager/ui/controllers/auth_controller.dart';
 
 import '../../data/services/network_caller.dart';
 

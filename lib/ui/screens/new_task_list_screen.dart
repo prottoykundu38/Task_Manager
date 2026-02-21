@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/data/models/task_model.dart';
 import 'package:task_manager/data/models/task_status_count_model.dart';
 import 'package:task_manager/data/services/network_caller.dart';
@@ -53,7 +54,8 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
                       count: _taskStatusCountList[index].count.toString(),
                     );
                   },
-                  separatorBuilder: (context, index) => const SizedBox(width: 4),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 4),
                 ),
               ),
             ),
@@ -85,13 +87,13 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
       ),
     );
   }
-  
+
   Future<void> _getNewTaskList() async {
     _getNewTasksInProgress = true;
     setState(() {});
 
-    NetworkResponse response = await NetworkCaller
-        .getRequest(url: Urls.getNewTasksUrl);
+    NetworkResponse response =
+        await NetworkCaller.getRequest(url: Urls.getNewTasksUrl);
 
     if (response.isSuccess) {
       List<TaskModel> list = [];
@@ -115,8 +117,8 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     _getTaskStatusCountInProgress = true;
     setState(() {});
 
-    NetworkResponse response = await NetworkCaller
-        .getRequest(url: Urls.getTaskStatusCountUrl);
+    NetworkResponse response =
+        await NetworkCaller.getRequest(url: Urls.getTaskStatusCountUrl);
 
     if (response.isSuccess) {
       List<TaskStatusCountModel> list = [];
@@ -137,6 +139,8 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   }
 
   void _onTapAddNewTaskButton() {
-    Navigator.pushNamed(context, AddNewTaskScreen.name);
+    // Navigator.pushNamed(context, AddNewTaskScreen.name);
+    // Get.to(() => AddNewTaskScreen());
+    Get.toNamed(AddNewTaskScreen.name);
   }
 }
