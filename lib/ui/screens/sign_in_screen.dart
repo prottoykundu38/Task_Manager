@@ -21,7 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final signInController _signInController = signInController();
+  final signInController _signInController = Get.find<signInController>();
 
   @override
   Widget build(BuildContext context) {
@@ -66,17 +66,17 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  GetBuilder(
-                      init: _signInController,
+                  GetBuilder<signInController>(
+                      // init: _signInController,
                       builder: (controler) {
-                        return Visibility(
-                          visible: !controler.inProgress,
-                          child: ElevatedButton(
-                            onPressed: _onTapSignInButton,
-                            child: Icon(Icons.arrow_circle_right_outlined),
-                          ),
-                        );
-                      }),
+                    return Visibility(
+                      visible: !controler.inProgress,
+                      child: ElevatedButton(
+                        onPressed: _onTapSignInButton,
+                        child: Icon(Icons.arrow_circle_right_outlined),
+                      ),
+                    );
+                  }),
                   const SizedBox(height: 32),
                   Center(
                     child: Column(
